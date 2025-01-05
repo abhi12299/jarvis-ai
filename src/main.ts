@@ -1,11 +1,7 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import started from "electron-squirrel-startup";
-import {
-  WhisperModelDownloader,
-  WhisperModel,
-  AVAILABLE_MODELS,
-} from "./whisper";
+import { WhisperModelDownloader, WhisperModel } from "./whisper";
 import WhisperTranscriber from "./whisper/transcribe";
 import fs from "fs";
 import { AudioProcessor } from "./audioProcessor";
@@ -36,8 +32,10 @@ const createWindow = () => {
     );
   }
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if (process.env.NODE_ENV === "development") {
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools();
+  }
 };
 
 // This method will be called when Electron has finished
@@ -72,26 +70,22 @@ ipcMain.handle("download-model", async (_, model: WhisperModel) => {
   });
 });
 
+const audioProcessor = new AudioProcessor();
+const transcriber = new WhisperTranscriber("base");
+
 ipcMain.handle(
   "transcribe-audio",
   async (_, arrayBuffer: ArrayBuffer, fileName: string) => {
     try {
-      const audioProcessor = new AudioProcessor();
       const tempFilePath = await audioProcessor.saveToFile(
         arrayBuffer,
         fileName
       );
 
-      console.log("tempFilePath", tempFilePath);
-
       // convert to wav
       const wavFilePath = await audioProcessor.convertToWav(tempFilePath);
-      console.log("wavFilePath", wavFilePath);
 
       // Transcribe the audio
-      const model: WhisperModel = "tiny";
-      console.log("model", model);
-      const transcriber = new WhisperTranscriber(model);
       const result = await transcriber.transcribe(wavFilePath);
 
       // Clean up the temporary file

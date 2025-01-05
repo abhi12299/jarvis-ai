@@ -1,4 +1,5 @@
 import { WhisperBase, WhisperModel } from ".";
+import { ITranscriptLine } from "../types";
 
 class WhisperTranscriber extends WhisperBase {
   constructor(model: WhisperModel) {
@@ -7,7 +8,6 @@ class WhisperTranscriber extends WhisperBase {
 
   async transcribe(audioPath: string) {
     const whisper = await this.whisperLib();
-    console.log("whisperLib", whisper);
     const params = {
       language: "en",
       model: this.modelPath,
@@ -20,11 +20,13 @@ class WhisperTranscriber extends WhisperBase {
       no_timestamps: false,
       audio_ctx: 0,
     };
-    console.log("params", params);
-    const result = await whisper(params);
 
-    console.log(result);
-    return result;
+    const result = await whisper(params);
+    return result.map((r: string[]) => ({
+      start: r[0],
+      end: r[1],
+      speech: r[2],
+    })) as ITranscriptLine[];
   }
 }
 

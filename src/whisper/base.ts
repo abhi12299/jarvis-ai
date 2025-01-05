@@ -10,6 +10,7 @@ class WhisperBase {
   private _modelsDir: string;
   private _modelPath: string;
   private _whisperAddonPath: string;
+  private _whisperLib: unknown;
 
   constructor(
     model: WhisperModel,
@@ -22,7 +23,7 @@ class WhisperBase {
       modelsDir ||
       (process.env.NODE_ENV === "development"
         ? path.join(__dirname, "../../models")
-        : path.join((process as any).resourcesPath, "models"));
+        : path.join(process.resourcesPath, "models"));
 
     this._whisperAddonPath =
       whisperAddonPath ||
@@ -31,14 +32,9 @@ class WhisperBase {
             __dirname,
             "../../lib/whisper.cpp/build/Release/addon.node.node"
           )
-        : path.join(
-            (process as any).resourcesPath,
-            "build/Release/addon.node.node"
-          ));
+        : path.join(process.resourcesPath, "build/Release/addon.node.node"));
 
-    console.log("whisperAddonPath", this._whisperAddonPath);
     this._modelPath = path.join(this._modelsDir, `${this.model}.bin`);
-    console.log("modelPath", this._modelPath);
   }
 
   async init() {
@@ -60,9 +56,13 @@ class WhisperBase {
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { whisper } = require(this._whisperAddonPath);
-    return promisify(whisper);
+    if (!this._whisperLib) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { whisper } = require(this._whisperAddonPath);
+      this._whisperLib = promisify(whisper);
+    }
+
+    return this._whisperLib;
   }
 
   get modelPath() {
