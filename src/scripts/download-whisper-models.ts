@@ -2,7 +2,7 @@ import path from "path";
 import { WhisperModel } from "../whisper/models";
 import WhisperModelDownloader from "../whisper/downloader";
 
-const PACKAGING_MODELS: WhisperModel[] = ["tiny"];
+const PACKAGING_MODELS: WhisperModel[] = ["base"];
 
 async function downloadModel(model: WhisperModel) {
   const modelsDir = path.join(__dirname, "../../models");
