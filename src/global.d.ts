@@ -1,5 +1,5 @@
 import { WhisperModel } from "./whisper/models";
-import { DownloadProgress } from "./types";
+import { DownloadProgress, ITranscriptLine } from "./types";
 
 declare global {
   interface Window {
@@ -11,7 +11,7 @@ declare global {
       transcribeAudio: (
         arrayBuffer: ArrayBuffer,
         fileName: string
-      ) => Promise<string>;
+      ) => Promise<ITranscriptLine[]>;
     };
   }
 }

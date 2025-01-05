@@ -16,3 +16,9 @@ export interface IpcChannels {
     response: DownloadProgress;
   };
 }
+
+export interface ITranscriptLine {
+  start: string;
+  end: string;
+  speech: string;
+}
