@@ -8,12 +8,11 @@ class FfmpegBase {
   private _tmpDir: string;
 
   constructor(binariesPath?: string) {
-    console.log((process as any).resourcesPath);
     this._binariesPath =
       binariesPath ||
       (process.env.NODE_ENV === "development"
         ? path.join(__dirname, "../../lib/ffmpeg")
-        : path.join((process as any).resourcesPath, "ffmpeg"));
+        : path.join(process.resourcesPath, "ffmpeg"));
 
     this._tmpDir = os.tmpdir();
   }

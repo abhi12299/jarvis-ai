@@ -35,7 +35,6 @@ class AudioProcessor extends FfmpegBase {
   async convertToWav(inputPath: string): Promise<string> {
     try {
       const inputFormat = await this.getAudioFormat(inputPath);
-      console.log("inputFormat", inputFormat);
 
       // If already WAV, return the input path
       if (inputFormat.toLowerCase() === "wav") {
@@ -45,8 +44,6 @@ class AudioProcessor extends FfmpegBase {
       // Create output path by replacing the extension with .wav
       const outputPath = inputPath.replace(/\.[^/.]+$/, "") + ".wav";
 
-      console.log("outputPath", outputPath);
-      console.log(this.ffmpegPath);
       // Convert to WAV using ffmpeg
       await execAsync(
         `"${this.ffmpegPath}" -y -i "${inputPath}" -acodec pcm_s16le -ar 16000 -ac 1 "${outputPath}"`

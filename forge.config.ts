@@ -6,8 +6,6 @@ import { MakerRpm } from "@electron-forge/maker-rpm";
 import { VitePlugin } from "@electron-forge/plugin-vite";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
-// import path from "path";
-// import fs from "fs/promises";
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -18,17 +16,6 @@ const config: ForgeConfig = {
     // macOS specific options
     darwinDarkModeSupport: true,
     icon: "./assets/icon.icns", // if you have an icon
-    // Ensure binaries are copied to the right location
-    // afterCopy: [
-    //   async (buildPath) => {
-    //     const ffmpegSrc = path.join(__dirname, "lib/ffmpeg");
-    //     const ffmpegDest = path.join(buildPath, "ffmpeg");
-    //     await fs.cp(ffmpegSrc, ffmpegDest, { recursive: true });
-    //     console.log(
-    //       `Copied ffmpeg binaries from ${ffmpegSrc} to ${ffmpegDest}`
-    //     );
-    //   },
-    // ],
   },
   rebuildConfig: {},
   makers: [
