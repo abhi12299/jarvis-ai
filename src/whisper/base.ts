@@ -22,7 +22,7 @@ class WhisperBase {
       modelsDir ||
       (process.env.NODE_ENV === "development"
         ? path.join(__dirname, "../../models")
-        : path.join((process as any).resourcesPath, "models"));
+        : path.join(process.resourcesPath, "models"));
 
     this._whisperAddonPath =
       whisperAddonPath ||
@@ -31,14 +31,9 @@ class WhisperBase {
             __dirname,
             "../../lib/whisper.cpp/build/Release/addon.node.node"
           )
-        : path.join(
-            (process as any).resourcesPath,
-            "build/Release/addon.node.node"
-          ));
+        : path.join(process.resourcesPath, "build/Release/addon.node.node"));
 
-    console.log("whisperAddonPath", this._whisperAddonPath);
     this._modelPath = path.join(this._modelsDir, `${this.model}.bin`);
-    console.log("modelPath", this._modelPath);
   }
 
   async init() {
