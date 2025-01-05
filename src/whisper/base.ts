@@ -10,6 +10,7 @@ class WhisperBase {
   private _modelsDir: string;
   private _modelPath: string;
   private _whisperAddonPath: string;
+  private _whisperLib: unknown;
 
   constructor(
     model: WhisperModel,
@@ -55,9 +56,13 @@ class WhisperBase {
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { whisper } = require(this._whisperAddonPath);
-    return promisify(whisper);
+    if (!this._whisperLib) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { whisper } = require(this._whisperAddonPath);
+      this._whisperLib = promisify(whisper);
+    }
+
+    return this._whisperLib;
   }
 
   get modelPath() {

@@ -70,11 +70,13 @@ ipcMain.handle("download-model", async (_, model: WhisperModel) => {
   });
 });
 
+const audioProcessor = new AudioProcessor();
+const transcriber = new WhisperTranscriber("base");
+
 ipcMain.handle(
   "transcribe-audio",
   async (_, arrayBuffer: ArrayBuffer, fileName: string) => {
     try {
-      const audioProcessor = new AudioProcessor();
       const tempFilePath = await audioProcessor.saveToFile(
         arrayBuffer,
         fileName
@@ -84,8 +86,6 @@ ipcMain.handle(
       const wavFilePath = await audioProcessor.convertToWav(tempFilePath);
 
       // Transcribe the audio
-      const model: WhisperModel = "base";
-      const transcriber = new WhisperTranscriber(model);
       const result = await transcriber.transcribe(wavFilePath);
 
       // Clean up the temporary file
