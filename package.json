@@ -52,7 +52,10 @@
   "author": "Abhishek Mehandiratta <abhi.9811206369@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@ai-sdk/groq": "^1.0.9",
+    "ai": "^4.0.27",
     "axios": "^1.7.9",
+    "electron-settings": "^4.0.4",
     "electron-squirrel-startup": "^1.0.1",
     "ffbinaries": "^1.1.6",
     "react": "^19.0.0",

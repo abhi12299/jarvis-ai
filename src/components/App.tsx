@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { AVAILABLE_MODELS, WhisperModel } from "../whisper/models";
-import { DownloadProgress, ITranscriptLine } from "../types";
+import { DownloadProgress } from "../types";
 
 export function App() {
   const [selectedModel, setSelectedModel] = useState<WhisperModel>("tiny");
   const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState<DownloadProgress | null>(null);
-  const [transcription, setTranscription] = useState<ITranscriptLine[]>([]);
+  const [transcription, setTranscription] = useState<string>("");
   const [transcribing, setTranscribing] = useState(false);
+  const [transcriptionDuration, setTransriptionDuration] = useState<number | null>(null);
+  const [groqApiKey, setGroqApiKey] = useState<string>("");
 
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string>("");
@@ -38,6 +40,14 @@ export function App() {
       setProgress(progress);
     });
     return cleanup;
+  }, []);
+
+  useEffect(() => {
+    const getGroqApiKey = async () => {
+      const apiKey = await window.electron.getGroqApiKey();
+      setGroqApiKey(apiKey);
+    };
+    getGroqApiKey();
   }, []);
 
   const handleDownload = async () => {
@@ -78,9 +88,11 @@ export function App() {
           const arrayBuffer = await audioBlob.arrayBuffer();
 
           setTranscribing(true);
+          const startTime = Date.now();
           try {
             const result = await window.electron.transcribeAudio(arrayBuffer, "recorded-audio.webm");
             setTranscription(result);
+            setTransriptionDuration((Date.now() - startTime) / 1000);
           } catch (error) {
             console.error("Transcription failed:", error);
           } finally {
@@ -124,6 +136,17 @@ export function App() {
         </button>
       </div>
 
+      <div>
+        <input
+          type="text"
+          value={groqApiKey}
+          onChange={(e) => setGroqApiKey(e.target.value)}
+        />
+        <button onClick={() => window.electron.setGroqApiKey(groqApiKey)}>
+          Set Groq API Key
+        </button>
+      </div>
+
       <div style={{ marginTop: "20px" }}>
         <h3>Audio Input</h3>
         <select
@@ -158,7 +181,14 @@ export function App() {
       {transcription && (
         <div style={{ marginTop: "20px" }}>
           <h3>Transcription:</h3>
-          <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(transcription, null, 2)}</pre>
+          <pre style={{ whiteSpace: "pre-wrap" }}>
+            {transcription}
+          </pre>
+          {transcriptionDuration && (
+            <div style={{ marginTop: "10px", fontSize: "14px", color: "#666" }}>
+              Transcription took: {transcriptionDuration.toFixed(2)} seconds
+            </div>
+          )}
         </div>
       )}
 

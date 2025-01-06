@@ -16,4 +16,7 @@ contextBridge.exposeInMainWorld("electron", {
   },
   transcribeAudio: (arrayBuffer: ArrayBuffer, fileName: string) =>
     ipcRenderer.invoke("transcribe-audio", arrayBuffer, fileName),
+  setGroqApiKey: (apiKey: string) =>
+    ipcRenderer.invoke("set-groq-api-key", apiKey),
+  getGroqApiKey: () => ipcRenderer.invoke("get-groq-api-key"),
 });
