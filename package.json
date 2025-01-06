@@ -19,7 +19,8 @@
     "clean-whisper-buildcache": "rimraf lib/whisper.cpp/build",
     "clean-ffmpeg": "rimraf lib/ffmpeg",
     "clean-whisper-models": "rimraf models",
-    "clean-all": "npm run clean-whisper-buildcache && npm run clean-ffmpeg && npm run clean-whisper-models"
+    "clean-all": "npm run clean-whisper-buildcache && npm run clean-ffmpeg && npm run clean-whisper-models",
+    "make-signed": "npm run clean-all && npm run build-whisper && npm run prebuild && electron-forge make --arch=arm64,x64"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.6.0",

@@ -6,16 +6,48 @@ import { MakerRpm } from "@electron-forge/maker-rpm";
 import { VitePlugin } from "@electron-forge/plugin-vite";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
+// import { signAsync } from "@electron/osx-sign";
+// import path from "path";
 
 const config: ForgeConfig = {
   packagerConfig: {
-    asar: {
-      unpack: "**/ffmpeg/**/*",
-    },
     extraResource: ["lib/whisper.cpp/build", "models", "lib/ffmpeg"],
-    // macOS specific options
     darwinDarkModeSupport: true,
-    icon: "./assets/icon.icns", // if you have an icon
+    icon: "./assets/icon.icns",
+    osxSign: {
+      identity: "Developer ID Application: Abhishek Mehandiratta",
+      optionsForFile: () => {
+        return {
+          entitlements: "entitlements.plist",
+          hardenedRuntime: true,
+        };
+      },
+    },
+    // afterComplete: [
+    //   async (buildPath) => {
+    //     await signAsync({
+    //       app: path.join(buildPath, "jarvis.app"),
+    //       identity: "Developer ID Application: Abhishek Mehandiratta",
+    //       optionsForFile: () => {
+    //         const entitlements = "entitlements.plist";
+
+    //         // const isBin =
+    //         //   filePath.includes("/Resources/build") ||
+    //         //   filePath.includes("/Resources/models") ||
+    //         //   filePath.includes("/Resources/ffmpeg");
+    //         // if (isBin) {
+    //         //   entitlements = "entitlements-bins.plist";
+    //         // }
+    //         // console.log("filePath", filePath, "isBin", isBin);
+
+    //         return {
+    //           hardenedRuntime: true,
+    //           entitlements,
+    //         };
+    //       },
+    //     });
+    //   },
+    // ],
   },
   rebuildConfig: {},
   makers: [
@@ -26,11 +58,8 @@ const config: ForgeConfig = {
   ],
   plugins: [
     new VitePlugin({
-      // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
-      // If you are familiar with Vite configuration, it will look really familiar.
       build: [
         {
-          // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
           entry: "src/main.ts",
           config: "vite.main.config.ts",
           target: "main",
@@ -48,8 +77,6 @@ const config: ForgeConfig = {
         },
       ],
     }),
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
     new FusesPlugin({
       version: FuseVersion.V1,
       [FuseV1Options.RunAsNode]: false,
