@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, systemPreferences } from "electron";
 import path from "path";
 import started from "electron-squirrel-startup";
 import { WhisperModelDownloader, WhisperModel } from "./whisper";
@@ -13,7 +13,7 @@ if (started) {
 
 let mainWindow: BrowserWindow | null = null;
 
-const createWindow = () => {
+const createWindow = async () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
@@ -31,6 +31,8 @@ const createWindow = () => {
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
     );
   }
+
+  await systemPreferences.askForMediaAccess("microphone");
 
   if (process.env.NODE_ENV === "development") {
     // Open the DevTools.
