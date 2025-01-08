@@ -5,6 +5,7 @@ import { WhisperModelDownloader, WhisperModel } from "./whisper";
 import WhisperTranscriber from "./whisper/transcribe";
 import fs from "fs";
 import { AudioProcessor } from "./audioProcessor";
+import Groq from "./ai/groq";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -74,6 +75,7 @@ ipcMain.handle("download-model", async (_, model: WhisperModel) => {
 
 const audioProcessor = new AudioProcessor();
 const transcriber = new WhisperTranscriber("base");
+const groq = new Groq("llama-3.3-70b-specdec");
 
 ipcMain.handle(
   "transcribe-audio",
@@ -97,10 +99,22 @@ ipcMain.handle(
         console.error("Error cleaning up temp file:", err);
       }
 
-      return result;
+      const text = result.reduce((acc, curr) => {
+        return acc + curr.speech;
+      }, "");
+
+      return await groq.transcribe(text);
     } catch (error) {
       console.error("Transcription error:", error);
       throw error;
     }
   }
 );
+
+ipcMain.handle("set-groq-api-key", async (_, apiKey: string) => {
+  groq.setApiKey(apiKey);
+});
+
+ipcMain.handle("get-groq-api-key", async () => {
+  return groq.getApiKey();
+});

@@ -1,5 +1,5 @@
 import { WhisperModel } from "./whisper/models";
-import { DownloadProgress, ITranscriptLine } from "./types";
+import { DownloadProgress } from "./types";
 
 declare global {
   interface Window {
@@ -11,7 +11,9 @@ declare global {
       transcribeAudio: (
         arrayBuffer: ArrayBuffer,
         fileName: string
-      ) => Promise<ITranscriptLine[]>;
+      ) => Promise<string>;
+      setGroqApiKey: (apiKey: string) => Promise<void>;
+      getGroqApiKey: () => Promise<string | undefined>;
     };
   }
 }
